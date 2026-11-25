@@ -1,52 +1,60 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Incomings</title>
+<title>Money coming to you</title>
 <style>
-body{font-family:system-ui,sans-serif;margin:0;background:#f4f5f7;color:#111}
-main{max-width:480px;margin:0 auto;padding:16px}
-h1{font-size:20px;margin:8px 0}
-.box{background:#111;color:#fff;border-radius:14px;padding:16px;margin:12px 0}
-.box b{font-size:28px;display:block}
-.row{background:#fff;border-radius:12px;padding:12px;margin:8px 0;display:flex;gap:10px;align-items:center}
-.row.paid{opacity:.5}.row.paid .amt{text-decoration:line-through}
-.info{flex:1}.who{font-weight:600}.why{font-size:13px;color:#555}
-.amt{font-weight:600;white-space:nowrap}
-button{border:0;border-radius:8px;padding:8px 10px;font-size:14px;cursor:pointer}
-.pay{background:#ffebee;color:#b71c1c}.paid .pay{background:#e8f5e9;color:#1b5e20}
-.del{background:none;color:#999}
-form{display:grid;gap:8px;margin-top:16px;background:#fff;padding:12px;border-radius:12px}
-input{padding:10px;border:1px solid #ccc;border-radius:8px;font-size:16px}
-form button{background:#111;color:#fff;padding:12px}
-h2{font-size:15px;margin:16px 0 0;color:#555}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,sans-serif;margin:0;background:#f3f6f4;color:#14231b}
+main{max-width:480px;margin:0 auto;padding:18px 16px 40px}
+.hero{background:linear-gradient(135deg,#0f7b4f,#18a56b);color:#fff;border-radius:22px;padding:26px 20px;text-align:center;box-shadow:0 8px 24px rgba(15,123,79,.25)}
+.hero small{display:block;font-size:15px;opacity:.9}
+.hero b{display:block;font-size:46px;margin:6px 0;letter-spacing:-1px}
+.hero span{font-size:14px;opacity:.9}
+h2{font-size:14px;letter-spacing:.05em;text-transform:uppercase;color:#5b6f64;margin:24px 4px 8px}
+.row{background:#fff;border-radius:16px;padding:14px;margin:10px 0;display:flex;gap:12px;align-items:center;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.av{width:42px;height:42px;border-radius:50%;background:#e1f3ea;color:#0f7b4f;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px}
+.info{flex:1}.who{font-weight:600;font-size:17px}.why{font-size:13px;color:#6b7c72}
+.amt{font-weight:700;font-size:17px;white-space:nowrap}
+button{border:0;border-radius:10px;padding:9px 12px;font-size:14px;font-weight:600;cursor:pointer}
+.pay{background:#0f7b4f;color:#fff}
+.row.paid{opacity:.55}.row.paid .amt{text-decoration:line-through}.row.paid .pay{background:#e1e6e3;color:#40524a}
+.del{background:none;color:#9aa;padding:6px}
+form{display:grid;gap:8px;background:#fff;padding:14px;border-radius:16px}
+input{padding:12px;border:1px solid #d3dcd7;border-radius:10px;font-size:16px}
+form button{background:#14231b;color:#fff;padding:13px}
+.note{font-size:12px;color:#8a9a90;text-align:center;margin-top:14px}
 </style></head><body><main>
-<h1>Money to collect</h1>
-<div class="box">Still to collect<b id="total">Rs 0</b><span id="sub"></span></div>
+<div class="hero"><small>You will get</small><b id="total">Rs 0</b><span id="sub"></span></div>
+<h2>Who owes you</h2>
 <div id="list"></div>
 <h2>Add new</h2>
-<form id="f"><input id="p" placeholder="Person" required><input id="r" placeholder="Reason"><input id="a" type="number" min="0" step="any" placeholder="Amount (Rs)" required><button>Add</button></form>
-<p style="font-size:12px;color:#888">Saved on this phone only.</p>
+<form id="f"><input id="p" placeholder="Name" required><input id="r" placeholder="Note (optional)"><input id="a" type="number" min="0" step="any" placeholder="Amount (Rs)" required><button>Add</button></form>
+<p class="note" id="upd">Paid marks and rows you add are saved on this phone only.</p>
 </main>
 <script>
-var K="incomings-v1";
-var seed=[{p:"Bharath",r:"Settlement 1,070 + bottle 4,030",a:5100,d:false},{p:"Priyanka",r:"5 COSRX Snail 92 creams (100,000 KRW + 5% forex)",a:7529,d:false}];
-var items;try{items=JSON.parse(localStorage.getItem(K))}catch(e){}
-if(!items)items=seed;
-function save(){localStorage.setItem(K,JSON.stringify(items))}
+var K="incomings-v2",S;
+try{S=JSON.parse(localStorage.getItem(K))}catch(e){}
+if(!S)S={paid:{},mine:[]};
+var base=[],items=[];
+function save(){localStorage.setItem(K,JSON.stringify(S))}
 function fmt(n){return "Rs "+Number(n).toLocaleString("en-IN")}
 function esc(s){var d=document.createElement("div");d.textContent=s;return d.innerHTML}
 function draw(){
 var t=0,c=0,l=document.getElementById("list");l.innerHTML="";
-items.forEach(function(x,i){
-if(!x.d){t+=+x.a;c++}
-var e=document.createElement("div");e.className="row"+(x.d?" paid":"");
-e.innerHTML='<div class="info"><div class="who">'+esc(x.p)+'</div><div class="why">'+esc(x.r||"")+'</div></div><div class="amt">'+fmt(x.a)+'</div><button class="pay">'+(x.d?"Paid":"Not paid")+'</button><button class="del">x</button>';
-e.querySelector(".pay").onclick=function(){x.d=!x.d;save();draw()};
-e.querySelector(".del").onclick=function(){if(confirm("Delete "+x.p+"?")){items.splice(i,1);save();draw()}};
+items=base.concat(S.mine);
+items.forEach(function(x){
+var d=!!S.paid[x.id];
+if(!d){t+=+x.a;c++}
+var e=document.createElement("div");e.className="row"+(d?" paid":"");
+e.innerHTML='<div class="av">'+esc((x.p||"?").charAt(0).toUpperCase())+'</div><div class="info"><div class="who">'+esc(x.p)+'</div>'+(x.r?'<div class="why">'+esc(x.r)+'</div>':'')+'</div><div class="amt">'+fmt(x.a)+'</div><button class="pay">'+(d?"Paid":"Mark paid")+'</button>'+(x.mine?'<button class="del">x</button>':'');
+e.querySelector(".pay").onclick=function(){if(d)delete S.paid[x.id];else S.paid[x.id]=1;save();draw()};
+var del=e.querySelector(".del");
+if(del)del.onclick=function(){if(confirm("Delete "+x.p+"?")){S.mine=S.mine.filter(function(m){return m.id!==x.id});delete S.paid[x.id];save();draw()}};
 l.appendChild(e)});
 document.getElementById("total").textContent=fmt(t);
-document.getElementById("sub").textContent=c+" pending";
+document.getElementById("sub").textContent=c?c+(c==1?" person":" people")+" still to pay":"All paid. Nothing pending.";
 }
 document.getElementById("f").onsubmit=function(ev){ev.preventDefault();
-items.push({p:p.value,r:r.value,a:+a.value,d:false});save();draw();this.reset()};
+S.mine.push({id:"m"+Date.now(),p:p.value,r:r.value,a:+a.value,mine:true});save();draw();this.reset()};
+fetch("data.json?t="+Date.now()).then(function(r){return r.json()}).then(function(j){base=j.items||[];if(j.updated)document.getElementById("upd").textContent="List updated "+j.updated+". Paid marks and rows you add are saved on this phone only.";draw()}).catch(function(){draw()});
 draw();
 </script></body></html>
