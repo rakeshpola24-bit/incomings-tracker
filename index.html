@@ -13,6 +13,7 @@ h2{font-size:14px;letter-spacing:.05em;text-transform:uppercase;color:#5b6f64;ma
 .row{background:#fff;border-radius:16px;padding:14px;margin:10px 0;display:flex;gap:12px;align-items:center;box-shadow:0 1px 4px rgba(0,0,0,.06)}
 .av{width:42px;height:42px;border-radius:50%;background:#e1f3ea;color:#0f7b4f;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px}
 .info{flex:1}.who{font-weight:600;font-size:17px}.why{font-size:13px;color:#6b7c72}
+.tap{font-size:11px;color:#9db3a7;margin-top:2px}
 .amt{font-weight:700;font-size:17px;white-space:nowrap}
 button{border:0;border-radius:10px;padding:9px 12px;font-size:14px;font-weight:600;cursor:pointer}
 .pay{background:#0f7b4f;color:#fff}
@@ -22,6 +23,17 @@ form{display:grid;gap:8px;background:#fff;padding:14px;border-radius:16px}
 input{padding:12px;border:1px solid #d3dcd7;border-radius:10px;font-size:16px}
 form button{background:#14231b;color:#fff;padding:13px}
 .note{font-size:12px;color:#8a9a90;text-align:center;margin-top:14px}
+.ov{position:fixed;inset:0;background:rgba(10,24,17,.55);display:flex;align-items:flex-end;justify-content:center;padding:14px;z-index:60}
+.ov[hidden]{display:none}
+.card{background:#fff;border-radius:20px;width:100%;max-width:460px;max-height:80vh;overflow:auto;padding:20px 18px;box-shadow:0 18px 50px rgba(0,0,0,.35)}
+.card h3{margin:0;font-size:20px}
+.card .dtd{font-size:13px;color:#6b7c72;margin:2px 0 10px}
+.dl{display:flex;justify-content:space-between;gap:10px;padding:8px 0;font-size:15px;border-bottom:1px dashed #e4ebe7}
+.dl span:last-child{white-space:nowrap;font-weight:600}
+.dl.r span:last-child{color:#b3261e}
+.dsub{display:flex;justify-content:space-between;padding:8px 0;font-size:15px;font-weight:600;border-bottom:1px solid #d3dcd7}
+.dtot{display:flex;justify-content:space-between;padding:12px 0 2px;font-size:18px;font-weight:700;color:#0f7b4f}
+.close{width:100%;margin-top:14px;background:#14231b;color:#fff;padding:12px;font-size:15px}
 </style></head><body><main>
 <div class="hero"><small>You will get</small><b id="total">Rs 0</b><span id="sub"></span></div>
 <h2>Who owes you</h2>
@@ -30,14 +42,30 @@ form button{background:#14231b;color:#fff;padding:13px}
 <form id="f"><input id="p" placeholder="Name" required><input id="r" placeholder="Note (optional)"><input id="a" type="number" min="0" step="any" placeholder="Amount (Rs)" required><button>Add</button></form>
 <p class="note" id="upd">Paid marks and rows you add are saved on this phone only.</p>
 </main>
+<div class="ov" id="ov" hidden><div class="card" id="card"></div></div>
 <script>
 var K="incomings-v2",S;
 try{S=JSON.parse(localStorage.getItem(K))}catch(e){}
 if(!S)S={paid:{},mine:[]};
 var base=[],items=[];
+var ov=document.getElementById("ov");
 function save(){localStorage.setItem(K,JSON.stringify(S))}
 function fmt(n){return "Rs "+Number(n).toLocaleString("en-IN")}
 function esc(s){var d=document.createElement("div");d.textContent=s;return d.innerHTML}
+function showDetail(x){
+var d=x.d||{};var h='<h3>'+esc(x.p)+'</h3>';
+if(d.date)h+='<div class="dtd">'+esc(d.date)+'</div>';
+(d.rows||[]).forEach(function(r){h+='<div class="dl"><span>'+esc(r[0])+'</span><span>'+esc(r[1])+'</span></div>'});
+if(d.subtotal)h+='<div class="dsub"><span>Total</span><span>'+esc(d.subtotal)+'</span></div>';
+(d.received||[]).forEach(function(r){h+='<div class="dl r"><span>'+esc(r[0])+'</span><span>- '+esc(r[1])+'</span></div>'});
+(d.extra||[]).forEach(function(r){h+='<div class="dl"><span>'+esc(r[0])+'</span><span>+ '+esc(r[1])+'</span></div>'});
+h+='<div class="dtot"><span>Pending</span><span>'+fmt(x.a)+'</span></div>';
+h+='<button class="close">Close</button>';
+var c=document.getElementById("card");c.innerHTML=h;
+c.querySelector(".close").onclick=function(){ov.hidden=true};
+ov.hidden=false;
+}
+ov.onclick=function(e){if(e.target===ov)ov.hidden=true};
 function draw(){
 var t=0,c=0,l=document.getElementById("list");l.innerHTML="";
 items=base.concat(S.mine);
@@ -45,7 +73,10 @@ items.forEach(function(x){
 var d=!!S.paid[x.id];
 if(!d){t+=+x.a;c++}
 var e=document.createElement("div");e.className="row"+(d?" paid":"");
-e.innerHTML='<div class="av">'+esc((x.p||"?").charAt(0).toUpperCase())+'</div><div class="info"><div class="who">'+esc(x.p)+'</div>'+(x.r?'<div class="why">'+esc(x.r)+'</div>':'')+'</div><div class="amt">'+fmt(x.a)+'</div><button class="pay">'+(d?"Paid":"Mark paid")+'</button>'+(x.mine?'<button class="del">x</button>':'');
+e.innerHTML='<div class="av">'+esc((x.p||"?").charAt(0).toUpperCase())+'</div><div class="info"><div class="who">'+esc(x.p)+'</div>'+(x.r?'<div class="why">'+esc(x.r)+'</div>':'')+(x.d?'<div class="tap">Tap name for details</div>':'')+'</div><div class="amt">'+fmt(x.a)+'</div><button class="pay">'+(d?"Paid":"Mark paid")+'</button>'+(x.mine?'<button class="del">x</button>':'');
+if(x.d){e.querySelector(".av").style.cursor="pointer";e.querySelector(".info").style.cursor="pointer";
+var open=function(){showDetail(x)};
+e.querySelector(".av").onclick=open;e.querySelector(".info").onclick=open}
 e.querySelector(".pay").onclick=function(){if(d)delete S.paid[x.id];else S.paid[x.id]=1;save();draw()};
 var del=e.querySelector(".del");
 if(del)del.onclick=function(){if(confirm("Delete "+x.p+"?")){S.mine=S.mine.filter(function(m){return m.id!==x.id});delete S.paid[x.id];save();draw()}};
