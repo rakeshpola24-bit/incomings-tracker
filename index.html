@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Incomings</title>
+<style>
+body{font-family:system-ui,sans-serif;margin:0;background:#f4f5f7;color:#111}
+main{max-width:480px;margin:0 auto;padding:16px}
+h1{font-size:20px;margin:8px 0}
+.box{background:#111;color:#fff;border-radius:14px;padding:16px;margin:12px 0}
+.box b{font-size:28px;display:block}
+.row{background:#fff;border-radius:12px;padding:12px;margin:8px 0;display:flex;gap:10px;align-items:center}
+.row.paid{opacity:.5}.row.paid .amt{text-decoration:line-through}
+.info{flex:1}.who{font-weight:600}.why{font-size:13px;color:#555}
+.amt{font-weight:600;white-space:nowrap}
+button{border:0;border-radius:8px;padding:8px 10px;font-size:14px;cursor:pointer}
+.pay{background:#ffebee;color:#b71c1c}.paid .pay{background:#e8f5e9;color:#1b5e20}
+.del{background:none;color:#999}
+form{display:grid;gap:8px;margin-top:16px;background:#fff;padding:12px;border-radius:12px}
+input{padding:10px;border:1px solid #ccc;border-radius:8px;font-size:16px}
+form button{background:#111;color:#fff;padding:12px}
+h2{font-size:15px;margin:16px 0 0;color:#555}
+</style></head><body><main>
+<h1>Money to collect</h1>
+<div class="box">Still to collect<b id="total">Rs 0</b><span id="sub"></span></div>
+<div id="list"></div>
+<h2>Add new</h2>
+<form id="f"><input id="p" placeholder="Person" required><input id="r" placeholder="Reason"><input id="a" type="number" min="0" step="any" placeholder="Amount (Rs)" required><button>Add</button></form>
+<p style="font-size:12px;color:#888">Saved on this phone only.</p>
+</main>
+<script>
+var K="incomings-v1";
+var seed=[{p:"Bharath",r:"Settlement 1,070 + bottle 4,030",a:5100,d:false},{p:"Priyanka",r:"5 COSRX Snail 92 creams (100,000 KRW + 5% forex)",a:7529,d:false}];
+var items;try{items=JSON.parse(localStorage.getItem(K))}catch(e){}
+if(!items)items=seed;
+function save(){localStorage.setItem(K,JSON.stringify(items))}
+function fmt(n){return "Rs "+Number(n).toLocaleString("en-IN")}
+function esc(s){var d=document.createElement("div");d.textContent=s;return d.innerHTML}
+function draw(){
+var t=0,c=0,l=document.getElementById("list");l.innerHTML="";
+items.forEach(function(x,i){
+if(!x.d){t+=+x.a;c++}
+var e=document.createElement("div");e.className="row"+(x.d?" paid":"");
+e.innerHTML='<div class="info"><div class="who">'+esc(x.p)+'</div><div class="why">'+esc(x.r||"")+'</div></div><div class="amt">'+fmt(x.a)+'</div><button class="pay">'+(x.d?"Paid":"Not paid")+'</button><button class="del">x</button>';
+e.querySelector(".pay").onclick=function(){x.d=!x.d;save();draw()};
+e.querySelector(".del").onclick=function(){if(confirm("Delete "+x.p+"?")){items.splice(i,1);save();draw()}};
+l.appendChild(e)});
+document.getElementById("total").textContent=fmt(t);
+document.getElementById("sub").textContent=c+" pending";
+}
+document.getElementById("f").onsubmit=function(ev){ev.preventDefault();
+items.push({p:p.value,r:r.value,a:+a.value,d:false});save();draw();this.reset()};
+draw();
+</script></body></html>
