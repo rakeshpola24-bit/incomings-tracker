@@ -60,6 +60,8 @@ if(d.subtotal)h+='<div class="dsub"><span>Total</span><span>'+esc(d.subtotal)+'<
 (d.received||[]).forEach(function(r){h+='<div class="dl r"><span>'+esc(r[0])+'</span><span>- '+esc(r[1])+'</span></div>'});
 (d.extra||[]).forEach(function(r){h+='<div class="dl"><span>'+esc(r[0])+'</span><span>+ '+esc(r[1])+'</span></div>'});
 h+='<div class="dtot"><span>Pending</span><span>'+fmt(x.a)+'</span></div>';
+if(d.infoTitle)h+='<div class="dsub" style="margin-top:12px;border-bottom:0"><span>'+esc(d.infoTitle)+'</span><span></span></div>';
+(d.info||[]).forEach(function(r){h+='<div class="dl"><span>'+esc(r[0])+'</span><span>'+esc(r[1])+'</span></div>'});
 h+='<button class="close">Close</button>';
 var c=document.getElementById("card");c.innerHTML=h;
 c.querySelector(".close").onclick=function(){ov.hidden=true};
