@@ -1,39 +1,47 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Money coming to you</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box}
-body{font-family:system-ui,-apple-system,sans-serif;margin:0;background:#f3f6f4;color:#14231b}
-main{max-width:480px;margin:0 auto;padding:18px 16px 40px}
-.hero{background:linear-gradient(135deg,#0f7b4f,#18a56b);color:#fff;border-radius:22px;padding:26px 20px;text-align:center;box-shadow:0 8px 24px rgba(15,123,79,.25)}
-.hero small{display:block;font-size:15px;opacity:.9}
-.hero b{display:block;font-size:46px;margin:6px 0;letter-spacing:-1px}
-.hero span{font-size:14px;opacity:.9}
-h2{font-size:14px;letter-spacing:.05em;text-transform:uppercase;color:#5b6f64;margin:24px 4px 8px}
-.row{background:#fff;border-radius:16px;padding:14px;margin:10px 0;display:flex;gap:12px;align-items:center;box-shadow:0 1px 4px rgba(0,0,0,.06)}
-.av{width:42px;height:42px;border-radius:50%;background:#e1f3ea;color:#0f7b4f;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px}
-.info{flex:1}.who{font-weight:600;font-size:17px}.why{font-size:13px;color:#6b7c72}
-.tap{font-size:11px;color:#9db3a7;margin-top:2px}
-.amt{font-weight:700;font-size:17px;white-space:nowrap}
-button{border:0;border-radius:10px;padding:9px 12px;font-size:14px;font-weight:600;cursor:pointer}
-.pay{background:#0f7b4f;color:#fff}
-.row.paid{opacity:.55}.row.paid .amt{text-decoration:line-through}.row.paid .pay{background:#e1e6e3;color:#40524a}
-.del{background:none;color:#9aa;padding:6px}
-form{display:grid;gap:8px;background:#fff;padding:14px;border-radius:16px}
-input{padding:12px;border:1px solid #d3dcd7;border-radius:10px;font-size:16px}
-form button{background:#14231b;color:#fff;padding:13px}
-.note{font-size:12px;color:#8a9a90;text-align:center;margin-top:14px}
-.ov{position:fixed;inset:0;background:rgba(10,24,17,.55);display:flex;align-items:flex-end;justify-content:center;padding:14px;z-index:60}
+html{-webkit-text-size-adjust:100%}
+body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;margin:0;background:#eef0f6;color:#181c2a;line-height:1.45}
+button,input{font:inherit}
+main{max-width:480px;margin:0 auto;padding:20px 16px 48px}
+.hero{background:linear-gradient(150deg,#312e81,#4f46e5 55%,#7c3aed);color:#fff;border-radius:26px;padding:30px 22px 26px;text-align:center;box-shadow:0 14px 34px rgba(63,56,190,.32);position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;top:-60px;right:-60px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.08)}
+.hero small{display:block;font-size:13px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;opacity:.85}
+.hero b{display:block;font-size:48px;font-weight:800;margin:8px 0 4px;letter-spacing:-1.5px}
+.hero span{font-size:14px;opacity:.85;font-weight:500}
+h2{font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#6b7186;margin:26px 6px 10px}
+.row{background:#fff;border-radius:18px;padding:15px 14px;margin:10px 0;display:flex;gap:12px;align-items:center;box-shadow:0 2px 8px rgba(24,28,42,.06);border:1px solid #e6e8f0}
+.av{width:44px;height:44px;border-radius:14px;background:#eceafd;color:#4f46e5;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:19px;flex:none}
+.info{flex:1;min-width:0}
+.who{font-weight:600;font-size:16px;color:#181c2a}
+.why{font-size:13px;color:#7a7f92;margin-top:1px}
+.tap{font-size:11px;color:#a3a8bb;margin-top:3px}
+.amt{font-weight:700;font-size:16px;white-space:nowrap;color:#181c2a}
+button{border:0;border-radius:12px;padding:9px 13px;font-size:13px;font-weight:600;cursor:pointer}
+.pay{background:#4f46e5;color:#fff;box-shadow:0 3px 10px rgba(79,70,229,.28)}
+.row.paid{opacity:.55}.row.paid .amt{text-decoration:line-through}.row.paid .pay{background:#e6e8f0;color:#5a5f73;box-shadow:none}
+.del{background:none;color:#b6bacb;padding:6px;font-size:15px}
+form{display:grid;gap:10px;background:#fff;padding:16px 14px;border-radius:18px;border:1px solid #e6e8f0;box-shadow:0 2px 8px rgba(24,28,42,.06)}
+input{padding:13px 14px;border:1px solid #d8dbe6;border-radius:12px;font-size:16px;background:#f8f9fc;color:#181c2a}
+input:focus{outline:2px solid #4f46e5;border-color:#4f46e5;background:#fff}
+form button{background:#181c2a;color:#fff;padding:14px;font-size:15px}
+.note{font-size:12px;color:#9499ad;text-align:center;margin-top:16px}
+.ov{position:fixed;inset:0;background:rgba(16,20,38,.55);display:flex;align-items:flex-end;justify-content:center;padding:14px;z-index:60}
 .ov[hidden]{display:none}
-.card{background:#fff;border-radius:20px;width:100%;max-width:460px;max-height:80vh;overflow:auto;padding:20px 18px;box-shadow:0 18px 50px rgba(0,0,0,.35)}
-.card h3{margin:0;font-size:20px}
-.card .dtd{font-size:13px;color:#6b7c72;margin:2px 0 10px}
-.dl{display:flex;justify-content:space-between;gap:10px;padding:8px 0;font-size:15px;border-bottom:1px dashed #e4ebe7}
-.dl span:last-child{white-space:nowrap;font-weight:600}
-.dl.r span:last-child{color:#b3261e}
-.dsub{display:flex;justify-content:space-between;padding:8px 0;font-size:15px;font-weight:600;border-bottom:1px solid #d3dcd7}
-.dtot{display:flex;justify-content:space-between;padding:12px 0 2px;font-size:18px;font-weight:700;color:#0f7b4f}
-.close{width:100%;margin-top:14px;background:#14231b;color:#fff;padding:12px;font-size:15px}
+.card{background:#fff;border-radius:24px 24px 18px 18px;width:100%;max-width:460px;max-height:80vh;overflow:auto;padding:22px 18px;box-shadow:0 20px 54px rgba(0,0,0,.35)}
+.card h3{margin:0;font-size:20px;font-weight:700;color:#181c2a}
+.card .dtd{font-size:13px;color:#7a7f92;margin:3px 0 12px}
+.dl{display:flex;justify-content:space-between;gap:12px;padding:9px 0;font-size:14px;border-bottom:1px dashed #e4e6ee;color:#3a3f52}
+.dl span:last-child{white-space:nowrap;font-weight:600;color:#181c2a}
+.dl.r span:last-child{color:#c2333b}
+.dsub{display:flex;justify-content:space-between;padding:10px 0;font-size:15px;font-weight:700;border-bottom:1px solid #d8dbe6;color:#181c2a}
+.dtot{display:flex;justify-content:space-between;padding:14px 0 2px;font-size:19px;font-weight:800;color:#4f46e5}
+.close{width:100%;margin-top:16px;background:#181c2a;color:#fff;padding:13px;font-size:15px}
 </style></head><body><main>
 <div class="hero"><small>You will get</small><b id="total">Rs 0</b><span id="sub"></span></div>
 <h2>Who owes you</h2>
